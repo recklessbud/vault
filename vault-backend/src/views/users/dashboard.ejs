@@ -1,0 +1,18 @@
+<h1>Dashboard</h1>
+<div id="userInfo"></div>
+
+<script>
+  const token = localStorage.getItem("accessToken");
+
+  fetch("/users/dashboard", {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+    .then(res => res.text())
+    .then(html => document.open() || document.write(html) || document.close())
+    .catch(err => {
+      alert("Unauthorized or error fetching dashboard");
+      window.location.href = "/auth/login";
+    });
+</script>

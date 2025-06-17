@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Session{
+  id String @id @default(uuid())
+  userId     String
+  token      String   @unique
+  userAgent  String? 
+  ipAddress  String? 
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  // Relation to User
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// model Role{
+//   id String @id @default(uuid())
+//   name String @unique
+//   users User[] 
+
+// }
+
+
+model User {
+  id String @id @default(uuid())
+  email String @unique
+  username String? @unique 
+  password String
+  // isVerified Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  resetToken String? @unique
+  
+  resetTokenExpires DateTime?
+  // roleId String  @default("user_role_id")
+  sessions Session[]
+  vaultItem VaultItem[]
+  sharedWith shareVaultItem[] @relation("sharedWith")
+  sharedeBy shareVaultItem[] @relation("sharedBy")
+} 
+
+model VaultItem {
+  id          String    @id @default(uuid())
+  userId      String
+  title       String
+  content     String?   // For text notes
+  isEncrypted Boolean   @default(true)
+  unlockAt    DateTime
+  unlocked    Boolean   @default(false)
+   message String?
+  daysLeft    Int       @default(0)
+  files       Files[]
+  createdAt   DateTime  @default(now())
+  sharedVaultItem shareVaultItem[]
+  user        User      @relation(fields: [userId], references: [id])
+}
+
+model Files {
+  id String @id @default(uuid())
+  url String
+  fileName String
+  vaultItem VaultItem @relation(fields: [vaultItemId], references: [id])
+  vaultItemId String
+}
+
+model shareVaultItem {
+  id String @id @default(uuid())
+  vaultItem  VaultItem @relation(fields: [vaultItemId], references: [id])
+  vaultItemId String
+
+  sharedWith User @relation("sharedWith", fields: [shareWithId], references: [id])
+  shareWithId String
+
+  sharedBy User @relation("sharedBy", fields: [sharedById], references: [id])
+  sharedById String
+
+  createdAt DateTime @default(now())
+
+}

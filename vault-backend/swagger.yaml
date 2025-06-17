@@ -1,0 +1,322 @@
+openapi: 3.0.0
+info:
+  title: Capsule Vault API Documentation
+  version: 1.0.0
+  description: |
+    Capsule Vault API allows users to securely store, manage, and share encrypted vault items (files and notes) with scheduled unlocking and sharing features. 
+    The API supports user authentication, file uploads, vault item management, and sharing of unlocked vaults with other users.
+
+servers:
+  - url: http://localhost:4001
+
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                username:
+                  type: string
+      responses:
+        201:
+          description: User registered successfully
+        400:
+          description: Bad request
+        500:
+          description: Internal server error	
+
+  /auth/login:
+    post:
+      summary: Log in the user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                username:
+                  type: string
+      responses:
+        200:
+          description: Log in the user
+        401:
+          description: Invalid credentials
+        500:
+          description: Internal server error
+
+  /auth/logout:
+    post:
+      summary: Log out the user
+      tags:
+        - Authentication
+      responses:
+        200:
+          description: Log out the user
+        401:
+          description: Unauthorized
+
+  /auth/forgot:
+    post:
+      summary: Reset the user's password
+      tags: 
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        200:
+          description: Password reset email sent successfully
+        400:
+          description: Bad request
+        404:
+          description: User not found
+        500:
+          description: Internal server error
+    
+  /vault:
+    get:
+      summary: Get all vault items
+      tags: [Vault]
+      description: Retrieve all vault items for the authenticated user.
+      responses:
+        200:
+          description: List of vault items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VaultItem"
+        401:
+          description: Unauthorized
+
+  /vault/upload:
+    post:
+      summary: Create a new vault item
+      tags: [Vault]
+      description: Create a new vault item with files and encrypted content.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+                unlockAt:
+                  type: string
+                  format: date-time
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        201:
+          description: Vault item created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VaultItem"
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+
+  /vault/{vaultId}/details:
+    get:
+      summary: Get a single vault item
+      tags: [Vault]
+      description: Retrieve a single unlocked vault item by ID.
+      parameters:
+        - in: path
+          name: vaultId
+          schema:
+            type: string
+          required: true
+          description: Vault item ID
+      responses:
+        200:
+          description: Vault item details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VaultItem"
+        404:
+          description: Vault item not found
+        401:
+          description: Unauthorized
+
+  /vault/{vaultId}/delete:
+    delete:
+      summary: Delete a vault item
+      tags: [Vault]
+      description: Delete a vault item and its associated files.
+      parameters:
+        - in: path
+          name: vaultId
+          schema:
+            type: string
+          required: true
+          description: Vault item ID
+      responses:
+        200:
+          description: Vault item deleted
+        404:
+          description: Vault item not found
+        401:
+          description: Unauthorized
+
+  /vault/{vaultId}/update:
+    put:
+      summary: Update a vault item
+      tags: [Vault]
+      description: Update an existing vault item and upload new files if provided.
+      parameters:
+        - in: path
+          name: vaultId
+          schema:
+            type: string
+          required: true
+          description: Vault item ID
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+                unlockAt:
+                  type: string
+                  format: date-time
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        200:
+          description: Vault item updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VaultItem"
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+
+  /vault/{vaultItemId}/share:
+    post:
+      summary: Share an unlocked vault item
+      tags: [Vault]
+      description: Share an unlocked vault item with another user.
+      parameters:
+        - in: path
+          name: vaultItemId
+          schema:
+            type: string
+          required: true
+          description: Vault item ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recipientName:
+                  type: string
+      responses:
+        200:
+          description: Vault item shared successfully
+        403:
+          description: Unauthorized or vault not found
+        401:
+          description: Unauthorized
+
+  /vault/shared:
+    get:
+      summary: Get shared vault items
+      tags: [Vault]
+      description: Retrieve all vault items shared with the authenticated user.
+      responses:
+        200:
+          description: List of shared vault items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VaultItem"
+        401:
+          description: Unauthorized
+
+components:
+  schemas:
+    VaultItem:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        unlockAt:
+          type: string
+          format: date-time
+        userId:
+          type: string
+        files:
+          type: array
+          items:
+            $ref: "#/components/schemas/VaultFile"
+        daysLeft:
+          type: number
+        unlocked:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    VaultFile:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        fileName:
+          type: string
+        vaultItemId:
+          type: string
