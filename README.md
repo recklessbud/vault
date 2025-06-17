@@ -3,7 +3,12 @@
 Capsule is a secure and personal **digital memory vault** that helps users preserve, manage, and revisit important moments, ideas, and digital keepsakes. Built with a focus on privacy, simplicity, and security, Capsule is the place to **store your thoughts, safely**.
 
 **URL**: https://time-capsule-unlock.vercel.app
+
 ---
+
+## Test Account
+- Username: smoke123
+- password: guyguyguy 
 
 ## 🎯 Purpose of the Project
 
@@ -41,7 +46,10 @@ It’s more than a note-taking app. It’s your **digital time capsule**.
 | Redis       | Caching, rate-limiting, sessions |
 | Docker      | Containerized deployment         |
 | JWT         | Auth system                      |
-| EJS         | Testing interface (before React) |
+| React       | Frontend                         
+| AWS         | loud service for file storage (s3)|
+| Jest        | Unit Testing                      |
+
 
 ---
 
@@ -71,6 +79,7 @@ It’s more than a note-taking app. It’s your **digital time capsule**.
   - PostgreSQL
   - Redis
   - Nginx proxy (optional)
+  - Background job
 - Backend exposed on `PORT 8001` (proxied through Nginx or Render)
 - Environment variables configured via `.env`
 
