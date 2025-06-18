@@ -101,13 +101,14 @@ const CreateCapsuleModal = ({ children }: CreateCapsuleModalProps) => {
         }" has been created and will unlock on ${format(
           form.getValues().unlockAt,
           "PPP"
-        )}.`,
+        )}. wait for it`,
       });
-      form.reset();
-      setOpen(false);
+      form.reset()
+      //setOpen(false);
       // Invalidate the vaults query to force a refetch and show the new capsule immediately
       queryClient.setQueryData(["vaults"], (old: any) => [data, ...(old || [])]);
       queryClient.invalidateQueries({ queryKey: ["vaults"] });
+      // setOpen(false);
     },
     onError: (error: any) => {
       toast({
@@ -119,8 +120,8 @@ const CreateCapsuleModal = ({ children }: CreateCapsuleModalProps) => {
   });
 
   const onSubmit = (data: CreateCapsuleForm) => {
-    createVaultMutation.mutate(data);
-    // setOpen(false);
+    createVaultMutation.mutate(data);     
+     setOpen(false);
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {

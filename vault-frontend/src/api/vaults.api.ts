@@ -123,3 +123,24 @@ export const getSharedVaultCountApi = async() => {
     toast.error(errorMessage);
     }
 }
+
+
+export const downloadfile = async(fileId: string) => {
+  try {
+    const response = await axios.get(`${BACKEND_URL}/vaults/details/${fileId}/download`);
+    console.log('Download response:', response.data.downloadFile);
+                   
+    if (response.data.downloadFile) {
+       const link = document.createElement('a');
+       link.href = response.data.downloadFile;
+       link.download = response.data.fileName || 'download';
+       document.body.appendChild(link);
+       link.click();
+       document.body.removeChild(link);
+      }
+  } catch (error) {
+    const errorMessage = error?.response?.data.message || "Could not Download file, Please try again later";
+    console.log('[ERROR]:', errorMessage);
+    toast.error(errorMessage);
+  }
+}

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getSingleVaultApi } from "@/api/vaults.api";
+import { downloadfile, getSingleVaultApi } from "@/api/vaults.api";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -70,6 +70,8 @@ export const GetCapsuleDetails = () => {
         return <FileText className="w-4 h-4" />;
     }
   };
+
+
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -150,17 +152,12 @@ export const GetCapsuleDetails = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-cosmic-400 hover:bg-cosmic-500/10"
+                      className="text-cosmic-400 hover:bg-cosmic-500/10 cursor-pointer"
                       asChild
+                      onClick={() => downloadfile(file.id)}
                     >
-                      <a
-                        href={file.url}
-                        download
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Download
-                      </a>
+                     <span>Download</span>
+                      
                     </Button>
                   </div>
                 ))

@@ -13,7 +13,7 @@ const SharedCapsules = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
-            <Link to="/users/dashboard">
+            <Link to="/users/dashboard/">
               <Button
                 variant="ghost"
                 size="sm"

@@ -57,9 +57,9 @@ export const GetSharedVaults = () => {
                 <div className="text-sm text-gray-400">Shared Capsules</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-nebula-400">
+                <div className="text-2xl font-bold text-green-400">
                   {
-                    queryData.filter(
+                    (Array.isArray (queryData) ? queryData : []).filter(
                       (c) => (c.daysLeft ?? c.vaultItem?.daysLeft) < 30
                     ).length
                   }
@@ -67,8 +67,8 @@ export const GetSharedVaults = () => {
                 <div className="text-sm text-gray-400">Unlocking Soon</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-400">
-                  {/* {queryData.reduce((sum, c) => sum + c.collaborators, 0)} */}
+                <div className="text-2xl font-bold text-red-400">
+                  {queryData.length}
                 </div>
                 <div className="text-sm text-gray-400">Total Collaborators</div>
               </div>
@@ -77,7 +77,7 @@ export const GetSharedVaults = () => {
 
           {/* Shared Capsules Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {queryData.map((capsule) => (
+            {(Array.isArray (queryData) ? queryData : []).map((capsule) => (
               <div
                 key={capsule.id}
                 className="glass-effect rounded-lg p-6 border border-white/10 hover:border-cosmic-500/50 transition-all duration-300"
@@ -125,13 +125,11 @@ export const GetSharedVaults = () => {
                   <div
                     className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
                       (capsule.daysLeft ?? capsule.vaultItem?.daysLeft) < 30
-                        ? "bg-orange-500/20 text-orange-400"
-                        : "bg-cosmic-500/20 text-cosmic-400"
+                  ? "bg-green-500/20 text-green-400"
+                  : "bg-cosmic-500/20 text-cosmic-400"
                     }`}
                   >
-                    {(capsule.daysLeft ?? capsule.vaultItem?.daysLeft) < 30
-                      ? "Unlocking Soon"
-                      : "Shared"}
+                  {capsule.daysLeft ?? capsule.vaultItem?.daysLeft == 0 ? "Unlocked" : "Locked"}
                   </div>
 
                   <Link to={`/users/dashboard/capsules/${capsule.vaultItem?.id}/details`}>
